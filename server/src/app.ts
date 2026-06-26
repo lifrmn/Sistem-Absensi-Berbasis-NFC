@@ -16,6 +16,9 @@ interface AuthenticatedRequest extends Request {
 
 const app = express();
 
+// Required when API runs behind nginx/reverse proxy so rate-limit uses real client IP.
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(cors({ origin: env.CORS_ORIGIN, credentials: false }));
 app.use(express.json({ limit: '100kb' }));

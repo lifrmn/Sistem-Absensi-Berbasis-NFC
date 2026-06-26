@@ -10,3 +10,7 @@ const envSchema = z.object({
 });
 
 export const env = envSchema.parse(process.env);
+
+if (env.NODE_ENV === 'production' && env.JWT_SECRET === 'dev-secret-change-this-at-least-32-chars') {
+  throw new Error('JWT_SECRET production tidak boleh menggunakan nilai default.');
+}
