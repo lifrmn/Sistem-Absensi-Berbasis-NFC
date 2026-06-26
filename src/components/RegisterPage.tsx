@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { toast } from 'sonner';
+import { register } from '../utils/apiClient';
 
 interface RegisterPageProps {
   onBack: () => void;
@@ -12,6 +13,7 @@ interface RegisterPageProps {
 
 export function RegisterPage({ onBack }: RegisterPageProps) {
   const redirectTimerRef = useRef<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     nama: '',
     idNumber: '',
@@ -21,7 +23,7 @@ export function RegisterPage({ onBack }: RegisterPageProps) {
     role: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.nama || !formData.idNumber || !formData.email || !formData.password || !formData.role) {
@@ -34,13 +36,29 @@ export function RegisterPage({ onBack }: RegisterPageProps) {
       return;
     }
 
-    toast.success('Akun berhasil didaftarkan!');
+    try {
+      setIsSubmitting(true);
+      await register({
+        nama: formData.nama.trim(),
+        idNumber: formData.idNumber.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        role: formData.role as 'dosen' | 'mahasiswa',
+      });
 
-    if (redirectTimerRef.current !== null) {
-      clearTimeout(redirectTimerRef.current);
+      toast.success('Akun berhasil didaftarkan!');
+
+      if (redirectTimerRef.current !== null) {
+        clearTimeout(redirectTimerRef.current);
+      }
+
+      redirectTimerRef.current = window.setTimeout(() => onBack(), 1500);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Registrasi gagal');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    redirectTimerRef.current = window.setTimeout(() => onBack(), 1500);
   };
 
   useEffect(() => {
@@ -142,9 +160,10 @@ export function RegisterPage({ onBack }: RegisterPageProps) {
 
             <Button 
               type="submit" 
+              disabled={isSubmitting}
               className="w-full bg-[#0052CC] hover:bg-[#003D99]"
             >
-              Daftar Akun
+              {isSubmitting ? 'Mendaftarkan...' : 'Daftar Akun'}
             </Button>
           </form>
         </div>

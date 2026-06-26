@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, Send, UserCheck, Bell } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -9,68 +9,91 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { Student } from '../App';
+import { getActiveSession, markManualAttendance, sendSessionNotification } from '../utils/apiClient';
 
 interface ActiveSessionProps {
   onBack: () => void;
 }
 
-const mockStudentsPresent: Student[] = [
-  { id: '1', nama: 'Ahmad Rasyid', nim: 'A001', status: 'hadir', waktuTap: '08:35' },
-  { id: '2', nama: 'Budi Santoso', nim: 'A002', status: 'hadir', waktuTap: '08:36' },
-  { id: '3', nama: 'Citra Dewi', nim: 'A003', status: 'hadir', waktuTap: '08:37' },
-  { id: '4', nama: 'Deni Pratama', nim: 'A004', status: 'hadir', waktuTap: '08:38' },
-  { id: '5', nama: 'Eka Putri', nim: 'A005', status: 'hadir', waktuTap: '08:39' },
-];
-
-const mockStudentsAbsent: Student[] = [
-  { id: '6', nama: 'Dinda Fadila', nim: 'A006', status: 'belum-hadir' },
-  { id: '7', nama: 'Fajar Ramadhan', nim: 'A007', status: 'belum-hadir' },
-  { id: '8', nama: 'Gita Permata', nim: 'A008', status: 'belum-hadir' },
-];
-
 export function ActiveSession({ onBack }: ActiveSessionProps) {
-  const [studentsPresent, setStudentsPresent] = useState<Student[]>(mockStudentsPresent);
-  const [studentsAbsent, setStudentsAbsent] = useState<Student[]>(mockStudentsAbsent);
+  const [studentsPresent, setStudentsPresent] = useState<Student[]>([]);
+  const [studentsAbsent, setStudentsAbsent] = useState<Student[]>([]);
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [sessionCourse, setSessionCourse] = useState('pemrograman-web');
+  const [isLoading, setIsLoading] = useState(true);
   const [showManualDialog, setShowManualDialog] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [manualReason, setManualReason] = useState('');
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+
+  const loadSession = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getActiveSession();
+      setSessionId(response.session.id);
+      setSessionCourse(response.session.course);
+      setStudentsPresent(response.present);
+      setStudentsAbsent(response.absent);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Gagal memuat sesi aktif');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSession();
+  }, []);
 
   const handleMarkManual = (student: Student) => {
     setSelectedStudent(student);
     setShowManualDialog(true);
   };
 
-  const handleConfirmManual = () => {
-    if (!selectedStudent || !manualReason.trim()) {
+  const handleConfirmManual = async () => {
+    if (!selectedStudent || !manualReason.trim() || !sessionId) {
       toast.error('Alasan harus diisi');
       return;
     }
 
-    // Move student from absent to present
-    const updatedStudent: Student = {
-      ...selectedStudent,
-      status: 'manual',
-      waktuTap: 'Manual',
-    };
-
-    setStudentsPresent([...studentsPresent, updatedStudent]);
-    setStudentsAbsent(studentsAbsent.filter(s => s.id !== selectedStudent.id));
-    
-    toast.success(`${selectedStudent.nama} berhasil ditandai hadir secara manual`);
-    setShowManualDialog(false);
-    setManualReason('');
-    setSelectedStudent(null);
+    try {
+      await markManualAttendance(sessionId, Number(selectedStudent.id), manualReason.trim());
+      toast.success(`${selectedStudent.nama} berhasil ditandai hadir secara manual`);
+      setShowManualDialog(false);
+      setManualReason('');
+      setSelectedStudent(null);
+      await loadSession();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Gagal menandai manual');
+    }
   };
 
-  const handleSendNotification = () => {
+  const handleSendNotification = async () => {
     if (studentsAbsent.length === 0) {
       toast.error('Tidak ada mahasiswa yang perlu dikirim notifikasi');
       return;
     }
 
-    toast.success(`Notifikasi berhasil dikirim ke ${studentsAbsent.length} mahasiswa`);
+    if (!sessionId) {
+      toast.error('Sesi aktif tidak ditemukan');
+      return;
+    }
+
+    try {
+      const result = await sendSessionNotification(sessionId);
+      toast.success(`Notifikasi berhasil dikirim ke ${result.count} mahasiswa`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Gagal mengirim notifikasi');
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8">
+        <div className="max-w-6xl mx-auto text-center text-gray-600 py-20">Memuat sesi aktif...</div>
+      </div>
+    );
+  }
 
   const handleViewDetail = (student: Student) => {
     setSelectedStudent(student);
@@ -94,7 +117,7 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl text-gray-900 mb-2">Sesi Absensi</h1>
-              <p className="text-gray-600">Mata Kuliah: Pemrograman Web</p>
+              <p className="text-gray-600">Mata Kuliah: {sessionCourse.replace(/-/g, ' ')}</p>
               <p className="text-sm text-gray-500">Tanggal: {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
             <div className="text-right">

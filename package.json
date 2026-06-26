@@ -79,9 +79,15 @@
       },
       "scripts": {
             "dev": "vite",
+            "dev:server": "tsx watch server/src/server.ts",
+            "dev:full": "concurrently -k \"npm run dev:server\" \"npm run dev\"",
+            "start:server": "tsx server/src/server.ts",
             "build": "vite build",
             "preview": "vite preview",
             "typecheck": "tsc --noEmit",
-            "check": "npm run typecheck && npm run build"
+            "test": "vitest run",
+            "test:watch": "vitest",
+            "test:e2e": "playwright test",
+            "check": "npm run typecheck && npm run test && npm run build"
       }
 }

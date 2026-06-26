@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Download, FileText, Brain } from 'lucide-react';
 import { Button } from './ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
@@ -15,27 +15,34 @@ import {
   analyzeAttendancePattern,
   generateMockRecentAttendance
 } from '../utils/aiAnalytics';
+import { getAttendanceReport } from '../utils/apiClient';
 
 interface AttendanceReportProps {
   onBack: () => void;
   onViewDetail: (student: Student) => void;
 }
 
-const mockReportData: Student[] = [
-  { id: '1', nama: 'Ahmad Rasyid', nim: 'A001', totalHadir: 12, totalTidakHadir: 3, persentase: 80, status: 'hadir' },
-  { id: '2', nama: 'Budi Santoso', nim: 'A002', totalHadir: 8, totalTidakHadir: 7, persentase: 53, status: 'hadir' },
-  { id: '3', nama: 'Citra Dewi', nim: 'A003', totalHadir: 14, totalTidakHadir: 1, persentase: 93, status: 'hadir' },
-  { id: '4', nama: 'Deni Pratama', nim: 'A004', totalHadir: 11, totalTidakHadir: 4, persentase: 73, status: 'hadir' },
-  { id: '5', nama: 'Eka Putri', nim: 'A005', totalHadir: 13, totalTidakHadir: 2, persentase: 87, status: 'hadir' },
-  { id: '6', nama: 'Dinda Fadila', nim: 'A006', totalHadir: 9, totalTidakHadir: 6, persentase: 60, status: 'hadir' },
-  { id: '7', nama: 'Fajar Ramadhan', nim: 'A007', totalHadir: 10, totalTidakHadir: 5, persentase: 67, status: 'hadir' },
-  { id: '8', nama: 'Gita Permata', nim: 'A008', totalHadir: 15, totalTidakHadir: 0, persentase: 100, status: 'hadir' },
-];
-
 export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps) {
   const [mataKuliah, setMataKuliah] = useState('pemrograman-web');
   const [periode, setPeriode] = useState('oktober');
-  const [reportData] = useState<Student[]>(mockReportData);
+  const [reportData, setReportData] = useState<Student[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadReport = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getAttendanceReport(mataKuliah);
+        setReportData(data);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Gagal memuat laporan');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadReport();
+  }, [mataKuliah]);
 
   const selectedCourseLabel = {
     'pemrograman-web': 'Pemrograman Web',
@@ -87,7 +94,7 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
   };
 
   // Generate AI insights
-  const classInsights = generateClassInsights(reportData);
+  const classInsights = useMemo(() => generateClassInsights(reportData), [reportData]);
   
   // Analyze students at risk
   const studentsWithRisk = reportData.map(student => {
@@ -108,6 +115,10 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
       pattern
     };
   }).sort((a, b) => b.riskAnalysis.riskScore - a.riskAnalysis.riskScore);
+
+  const averagePercentage = reportData.length > 0
+    ? Math.round(reportData.reduce((acc, s) => acc + (s.persentase || 0), 0) / reportData.length)
+    : 0;
 
   const handleExportPDF = () => {
     const rows = reportData
@@ -281,7 +292,7 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
           <div className="bg-white rounded-lg shadow-sm p-4">
             <p className="text-sm text-gray-600 mb-1">Rata-rata Kehadiran</p>
             <p className="text-3xl text-green-600">
-              {Math.round(reportData.reduce((acc, s) => acc + (s.persentase || 0), 0) / reportData.length)}%
+              {averagePercentage}%
             </p>
           </div>
           <div className="bg-white rounded-lg shadow-sm p-4">
@@ -348,6 +359,13 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
                       </TableCell>
                     </TableRow>
                   ))}
+                  {!isLoading && reportData.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                        Belum ada data laporan untuk mata kuliah ini.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>

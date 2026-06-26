@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
 import { env } from './env';
 import type { AuthUser } from './types';
 
@@ -7,6 +8,11 @@ interface JwtPayload {
   sub: number;
   role: AuthUser['role'];
 }
+
+const jwtPayloadSchema = z.object({
+  sub: z.number().int().positive(),
+  role: z.enum(['dosen', 'mahasiswa']),
+});
 
 export function hashPassword(password: string): string {
   return bcrypt.hashSync(password, 12);
@@ -23,5 +29,6 @@ export function signToken(user: AuthUser): string {
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+  const rawPayload = jwt.verify(token, env.JWT_SECRET);
+  return jwtPayloadSchema.parse(rawPayload);
 }

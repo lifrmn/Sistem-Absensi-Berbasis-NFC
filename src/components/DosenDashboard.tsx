@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { LayoutDashboard, BookOpen, FileText, Settings, LogOut, Users, Nfc, Plus, Brain, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
+import { getDashboardStats } from '../utils/apiClient';
 
 interface DosenDashboardProps {
   userName: string;
@@ -20,6 +22,26 @@ export function DosenDashboard({
   onSettings, 
   onLogout 
 }: DosenDashboardProps) {
+  const [stats, setStats] = useState({
+    totalSesiHariIni: 0,
+    totalHadir: 0,
+    totalMahasiswa: 0,
+    persenHadir: 0,
+  });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const response = await getDashboardStats();
+        setStats(response);
+      } catch {
+        setStats({ totalSesiHariIni: 0, totalHadir: 0, totalMahasiswa: 0, persenHadir: 0 });
+      }
+    };
+
+    loadStats();
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-[#F5F7FA]">
       {/* Sidebar */}
@@ -92,7 +114,7 @@ export function DosenDashboard({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl mb-1 bg-gradient-to-r from-[#0052CC] to-[#003D99] bg-clip-text text-transparent">3</div>
+              <div className="text-4xl mb-1 bg-gradient-to-r from-[#0052CC] to-[#003D99] bg-clip-text text-transparent">{stats.totalSesiHariIni}</div>
               <p className="text-sm text-gray-600">Sesi aktif berlangsung</p>
             </CardContent>
           </Card>
@@ -105,8 +127,8 @@ export function DosenDashboard({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl mb-1 text-[#FFC107]">42</div>
-              <p className="text-sm text-gray-600">dari 50 mahasiswa (84%)</p>
+              <div className="text-4xl mb-1 text-[#FFC107]">{stats.totalHadir}</div>
+              <p className="text-sm text-gray-600">dari {stats.totalMahasiswa} mahasiswa ({stats.persenHadir}%)</p>
             </CardContent>
           </Card>
 

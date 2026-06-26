@@ -12,6 +12,8 @@ import { SettingsPage } from './components/SettingsPage';
 import { Toaster } from './components/ui/sonner';
 import { Button } from './components/ui/button';
 import { Palette } from 'lucide-react';
+import { toast } from 'sonner';
+import { AUTH_TOKEN_KEY, clearToken, getCurrentUser, tapAttendance } from './utils/apiClient';
 
 const AIChatbot = lazy(() => import('./components/AIChatbot').then((module) => ({ default: module.AIChatbot })));
 const DesignShowcase = lazy(() => import('./components/DesignShowcase').then((module) => ({ default: module.DesignShowcase })));
@@ -42,21 +44,24 @@ function App() {
   const [showDesignShowcase, setShowDesignShowcase] = useState<boolean>(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (!stored) {
+    const bootstrapAuth = async () => {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) {
         return;
       }
 
-      const parsed = JSON.parse(stored) as { role?: UserRole; name?: string };
-      if ((parsed.role === 'dosen' || parsed.role === 'mahasiswa') && typeof parsed.name === 'string' && parsed.name.trim()) {
-        setUserRole(parsed.role);
-        setUserName(parsed.name);
-        setCurrentScreen(parsed.role === 'dosen' ? 'dosen-dashboard' : 'mahasiswa-dashboard');
+      try {
+        const user = await getCurrentUser();
+        setUserRole(user.role);
+        setUserName(user.name);
+        setCurrentScreen(user.role === 'dosen' ? 'dosen-dashboard' : 'mahasiswa-dashboard');
+      } catch {
+        clearToken();
+        localStorage.removeItem(AUTH_STORAGE_KEY);
       }
-    } catch {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-    }
+    };
+
+    bootstrapAuth();
   }, []);
 
   useEffect(() => {
@@ -74,6 +79,20 @@ function App() {
     );
   }, [userRole, userName]);
 
+  useEffect(() => {
+    if (!userRole && !['splash', 'login', 'register'].includes(currentScreen)) {
+      setCurrentScreen('login');
+      return;
+    }
+
+    if (
+      userRole === 'mahasiswa' &&
+      ['dosen-dashboard', 'active-session', 'report', 'student-detail', 'settings'].includes(currentScreen)
+    ) {
+      setCurrentScreen('mahasiswa-dashboard');
+    }
+  }, [currentScreen, userRole]);
+
   const handleLogin = (role: UserRole, name: string) => {
     setUserRole(role);
     setUserName(name);
@@ -85,9 +104,22 @@ function App() {
   };
 
   const handleLogout = () => {
+    clearToken();
     setUserRole(null);
     setUserName('');
     setCurrentScreen('login');
+  };
+
+  const handleTapSuccess = async () => {
+    try {
+      await tapAttendance();
+      toast.success('Absensi NFC berhasil tercatat');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Gagal menyimpan absensi';
+      toast.error(message);
+    } finally {
+      setCurrentScreen('mahasiswa-dashboard');
+    }
   };
 
   const handleViewStudentDetail = (student: Student) => {
@@ -158,7 +190,7 @@ function App() {
 
       {currentScreen === 'nfc-scan' && (
         <NFCScanOverlay 
-          onSuccess={() => setCurrentScreen('mahasiswa-dashboard')}
+          onSuccess={handleTapSuccess}
           onBack={() => setCurrentScreen('mahasiswa-dashboard')}
         />
       )}

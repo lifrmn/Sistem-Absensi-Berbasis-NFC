@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Alert, AlertDescription } from './ui/alert';
 import { UserRole } from '../App';
+import { login } from '../utils/apiClient';
 
 interface LoginPageProps {
   onLogin: (role: UserRole, name: string) => void;
@@ -16,22 +17,25 @@ export function LoginPage({ onLogin, onRegister }: LoginPageProps) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // Mock authentication
     if (!username || !password) {
       setError('Username dan password harus diisi');
       return;
     }
 
-    // Demo: Check if dosen or mahasiswa based on username
-    if (username.toLowerCase().includes('dosen') || username.toLowerCase() === 'admin') {
-      onLogin('dosen', username);
-    } else {
-      onLogin('mahasiswa', username);
+    try {
+      setIsSubmitting(true);
+      const user = await login(username, password);
+      onLogin(user.role, user.name);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal login');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -137,9 +141,10 @@ export function LoginPage({ onLogin, onRegister }: LoginPageProps) {
 
             <Button 
               type="submit" 
+              disabled={isSubmitting}
               className="w-full bg-[#0052CC] hover:bg-[#003D99]"
             >
-              Masuk
+              {isSubmitting ? 'Memproses...' : 'Masuk'}
             </Button>
           </form>
 
@@ -156,8 +161,9 @@ export function LoginPage({ onLogin, onRegister }: LoginPageProps) {
           </div>
 
           <div className="text-center text-sm text-gray-500 pt-4">
-            <p>Demo Login:</p>
-            <p>Dosen: username "dosen" / Mahasiswa: username lainnya</p>
+            <p>Demo Login API:</p>
+            <p>Dosen: dosen / Dosen@12345</p>
+            <p>Mahasiswa: a001 / Mahasiswa@12345</p>
           </div>
         </div>
       </div>
