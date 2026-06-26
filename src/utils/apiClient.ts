@@ -1,6 +1,6 @@
 import type { Student, UserRole } from '../App';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const AUTH_TOKEN_KEY = 'nfc_absensi_token_v1';
 
 export interface AuthUser {
@@ -62,10 +62,16 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers,
+    });
+  } catch {
+    throw new Error('Tidak dapat terhubung ke server API. Pastikan backend berjalan dan URL API benar.');
+  }
 
   const payload = await response.json().catch(() => ({}));
 

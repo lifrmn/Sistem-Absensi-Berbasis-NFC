@@ -78,9 +78,10 @@
             "vitest": "^4.1.9"
       },
       "scripts": {
-            "dev": "vite",
+            "dev": "npm run dev:full",
+            "dev:web": "vite",
             "dev:server": "tsx watch server/src/server.ts",
-            "dev:full": "concurrently -k \"npm run dev:server\" \"npm run dev\"",
+            "dev:full": "concurrently -k \"npm run dev:server\" \"npm run dev:web\"",
             "start:server": "tsx server/src/server.ts",
             "build": "vite build",
             "preview": "vite preview",
