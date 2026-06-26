@@ -1,44 +1,86 @@
 
-  # Sistem Absensi NFC Unismuh
+# Sistem Absensi NFC Unismuh
 
-  Sistem absensi berbasis NFC dengan frontend React + backend Express + SQLite.
+Sistem absensi berbasis NFC dengan frontend React, backend Express, dan SQLite.
 
-  ## Persiapan
+## Menjalankan Lokal
 
-  1. Install dependency:
-     - `npm install`
-  2. Salin environment:
-     - `cp .env.example .env`
-  3. Pastikan `JWT_SECRET` di `.env` memiliki minimal 32 karakter.
+1. Install dependency:
+   - `npm install`
+2. Siapkan env lokal:
+   - `cp .env.example .env`
+3. Pastikan `JWT_SECRET` minimal 32 karakter.
+4. Jalankan full-stack lokal:
+   - `npm run dev`
 
-  ## Menjalankan Aplikasi (Local)
+Endpoint lokal:
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:4000`
 
-  - Jalankan full-stack (frontend + backend):
-    - `npm run dev`
-  - Frontend akan berjalan di `http://localhost:3000`
-  - Backend API berjalan di `http://localhost:4000`
+Catatan:
+- Frontend default memakai `/api` (same-origin).
+- Saat development, Vite memproxy `/api` ke backend.
 
-  Catatan:
-  - Frontend default memakai `/api` (same-origin) dan otomatis diproxy ke backend saat development.
-  - Jika API ada di host lain, set `VITE_API_BASE_URL` di `.env` (contoh: `https://api.domainanda.com/api`).
+## Akun Demo
 
-  ## Akun Demo
+- Dosen:
+  - Username: `dosen`
+  - Password: `Dosen@12345`
+- Mahasiswa:
+  - Username: `a001`
+  - Password: `Mahasiswa@12345`
 
-  - Dosen:
-    - Username: `dosen`
-    - Password: `Dosen@12345`
-  - Mahasiswa:
-    - Username: `a001`
-    - Password: `Mahasiswa@12345`
+## Deploy Production Terintegrasi
 
-  ## Quality Gate Sebelum Deploy
+Arsitektur production:
+- `frontend` container: Nginx serve build React + reverse proxy `/api`.
+- `backend` container: Express API pada port internal 4000.
+- Persistensi database SQLite pada volume Docker `app_data`.
 
-  - Typecheck + unit/integration + build:
-    - `npm run check`
-  - E2E Playwright:
-    - `npm run test:e2e`
+File deployment:
+- `Dockerfile.frontend`
+- `Dockerfile.backend`
+- `docker-compose.prod.yml`
+- `deploy/nginx/default.conf`
+- `scripts/deploy-prod.sh`
+- `scripts/healthcheck-prod.sh`
 
-  ## Menjalankan Backend Saja (Production-like)
+### 1) Siapkan env production
 
-  - `npm run start:server`
+1. Salin template:
+   - `cp .env.production.example .env.production`
+2. Isi nilai production:
+   - `JWT_SECRET` wajib acak dan minimal 32 karakter.
+   - `CORS_ORIGIN` isi domain aplikasi Anda, contoh `https://absensi.example.com`.
+
+### 2) Startup command production
+
+Jalankan:
+- `bash scripts/deploy-prod.sh`
+
+Script akan:
+- Validasi `.env.production` dan `JWT_SECRET`.
+- Build image backend/frontend.
+- Start container dengan `docker compose`.
+
+### 3) Cek health dan status
+
+- `bash scripts/healthcheck-prod.sh`
+
+Atau manual:
+- `docker compose -f docker-compose.prod.yml ps`
+- `curl http://localhost/healthz`
+- `curl http://localhost/api/health`
+
+### 4) Stop / restart
+
+- Stop: `docker compose -f docker-compose.prod.yml down`
+- Restart: `docker compose -f docker-compose.prod.yml restart`
+
+## Quality Gate Sebelum Deploy
+
+- Typecheck + unit/integration + build:
+  - `npm run check`
+- E2E Playwright:
+  - `npm run test:e2e`
   
