@@ -1,0 +1,8 @@
+node_modules/
+build/
+test-results/
+.env
+.env.production
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal
