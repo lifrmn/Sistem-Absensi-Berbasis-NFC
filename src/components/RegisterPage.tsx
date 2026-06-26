@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface RegisterPageProps {
   onBack: () => void;
 }
 
 export function RegisterPage({ onBack }: RegisterPageProps) {
+  const redirectTimerRef = useRef<number | null>(null);
   const [formData, setFormData] = useState({
     nama: '',
     idNumber: '',
@@ -34,8 +35,21 @@ export function RegisterPage({ onBack }: RegisterPageProps) {
     }
 
     toast.success('Akun berhasil didaftarkan!');
-    setTimeout(() => onBack(), 1500);
+
+    if (redirectTimerRef.current !== null) {
+      clearTimeout(redirectTimerRef.current);
+    }
+
+    redirectTimerRef.current = window.setTimeout(() => onBack(), 1500);
   };
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current !== null) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] p-6">

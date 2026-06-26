@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Nfc, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { motion } from 'motion/react';
@@ -12,32 +12,41 @@ type ScanStatus = 'scanning' | 'success' | 'error';
 
 export function NFCScanOverlay({ onSuccess, onBack }: NFCScanOverlayProps) {
   const [status, setStatus] = useState<ScanStatus>('scanning');
+  const timersRef = useRef<number[]>([]);
+
+  const clearAllTimers = () => {
+    timersRef.current.forEach((timerId) => clearTimeout(timerId));
+    timersRef.current = [];
+  };
+
+  const startScan = () => {
+    clearAllTimers();
+    setStatus('scanning');
+
+    // In production mode we avoid random outcomes for a predictable UX.
+    const scanTimer = window.setTimeout(() => {
+      setStatus('success');
+
+      const successTimer = window.setTimeout(() => {
+        onSuccess();
+      }, 1800);
+
+      timersRef.current.push(successTimer);
+    }, 2500);
+
+    timersRef.current.push(scanTimer);
+  };
 
   useEffect(() => {
-    // Simulate NFC scan process
-    const timer = setTimeout(() => {
-      // 80% success rate for demo
-      if (Math.random() > 0.2) {
-        setStatus('success');
-        setTimeout(() => {
-          onSuccess();
-        }, 2000);
-      } else {
-        setStatus('error');
-      }
-    }, 3000);
+    startScan();
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearAllTimers();
+    };
   }, [onSuccess]);
 
   const handleRetry = () => {
-    setStatus('scanning');
-    setTimeout(() => {
-      setStatus('success');
-      setTimeout(() => {
-        onSuccess();
-      }, 2000);
-    }, 3000);
+    startScan();
   };
 
   return (

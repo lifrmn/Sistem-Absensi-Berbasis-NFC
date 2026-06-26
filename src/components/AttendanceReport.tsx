@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { Student } from '../App';
 import { AIInsightsPanel } from './AIInsightsPanel';
 import { AIPredictionCard } from './AIPredictionCard';
@@ -37,6 +37,55 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
   const [periode, setPeriode] = useState('oktober');
   const [reportData] = useState<Student[]>(mockReportData);
 
+  const selectedCourseLabel = {
+    'pemrograman-web': 'Pemrograman Web',
+    'basis-data': 'Basis Data',
+    'algoritma': 'Algoritma & Struktur Data',
+    'jaringan': 'Jaringan Komputer',
+  }[mataKuliah] || 'Semua Mata Kuliah';
+
+  const selectedPeriodLabel = {
+    januari: 'Januari 2025',
+    februari: 'Februari 2025',
+    maret: 'Maret 2025',
+    april: 'April 2025',
+    mei: 'Mei 2025',
+    juni: 'Juni 2025',
+    juli: 'Juli 2025',
+    agustus: 'Agustus 2025',
+    september: 'September 2025',
+    oktober: 'Oktober 2025',
+    november: 'November 2025',
+    desember: 'Desember 2025',
+  }[periode] || 'Semua Periode';
+
+  const createCsvContent = () => {
+    const header = ['Nama', 'NIM', 'Total Hadir', 'Total Tidak Hadir', 'Persentase'];
+    const rows = reportData.map((student) => [
+      student.nama,
+      student.nim,
+      String(student.totalHadir ?? 0),
+      String(student.totalTidakHadir ?? 0),
+      `${student.persentase ?? 0}%`,
+    ]);
+
+    return [header, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+  };
+
+  const downloadBlob = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   // Generate AI insights
   const classInsights = generateClassInsights(reportData);
   
@@ -61,11 +110,71 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
   }).sort((a, b) => b.riskAnalysis.riskScore - a.riskAnalysis.riskScore);
 
   const handleExportPDF = () => {
-    toast.success('Laporan PDF sedang diunduh...');
+    const rows = reportData
+      .map(
+        (student) => `
+          <tr>
+            <td>${student.nama}</td>
+            <td>${student.nim}</td>
+            <td>${student.totalHadir ?? 0}</td>
+            <td>${student.totalTidakHadir ?? 0}</td>
+            <td>${student.persentase ?? 0}%</td>
+          </tr>
+        `,
+      )
+      .join('');
+
+    const printWindow = window.open('', '_blank', 'width=1000,height=700');
+    if (!printWindow) {
+      toast.error('Popup browser diblokir. Izinkan popup untuk export PDF.');
+      return;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Laporan Kehadiran - ${selectedPeriodLabel}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 24px; }
+            h1 { margin-bottom: 4px; }
+            p { margin: 4px 0; color: #555; }
+            table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+            th { background: #f3f4f6; }
+          </style>
+        </head>
+        <body>
+          <h1>Laporan Kehadiran Mahasiswa</h1>
+          <p>Mata Kuliah: ${selectedCourseLabel}</p>
+          <p>Periode: ${selectedPeriodLabel}</p>
+          <p>Tanggal Export: ${new Date().toLocaleString('id-ID')}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>NIM</th>
+                <th>Total Hadir</th>
+                <th>Total Tidak Hadir</th>
+                <th>Persentase</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    toast.success('Jendela cetak laporan dibuka. Pilih Save as PDF untuk menyimpan.');
   };
 
   const handleExportExcel = () => {
-    toast.success('Laporan Excel sedang diunduh...');
+    const fileName = `laporan-kehadiran-${periode}.csv`;
+    downloadBlob(createCsvContent(), fileName, 'text/csv;charset=utf-8;');
+    toast.success(`File ${fileName} berhasil diunduh.`);
   };
 
   const getPersentaseBadge = (persentase?: number) => {

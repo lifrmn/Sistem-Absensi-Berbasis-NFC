@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -25,6 +25,15 @@ export function AIChatbot() {
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const replyTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (replyTimerRef.current !== null) {
+        clearTimeout(replyTimerRef.current);
+      }
+    };
+  }, []);
 
   // Knowledge Base untuk AI Chatbot
   const knowledgeBase = [
@@ -81,12 +90,13 @@ export function AIChatbot() {
   };
 
   const handleSendMessage = () => {
-    if (!inputText.trim()) return;
+    const messageText = inputText.trim();
+    if (!messageText) return;
 
     // Tambah pesan user
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputText,
+      text: messageText,
       sender: 'user',
       timestamp: new Date()
     };
@@ -95,9 +105,13 @@ export function AIChatbot() {
     setInputText('');
     setIsTyping(true);
 
+    if (replyTimerRef.current !== null) {
+      clearTimeout(replyTimerRef.current);
+    }
+
     // Simulasi typing delay
-    setTimeout(() => {
-      const botResponse = generateBotResponse(inputText);
+    replyTimerRef.current = window.setTimeout(() => {
+      const botResponse = generateBotResponse(messageText);
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: botResponse,
@@ -107,10 +121,11 @@ export function AIChatbot() {
 
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
+      replyTimerRef.current = null;
     }, 1000);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -209,7 +224,7 @@ export function AIChatbot() {
           <Input
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Ketik pertanyaan Anda..."
             className="flex-1"
           />

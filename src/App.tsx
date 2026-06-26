@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { SplashScreen } from './components/SplashScreen';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
@@ -9,11 +9,14 @@ import { ActiveSession } from './components/ActiveSession';
 import { AttendanceReport } from './components/AttendanceReport';
 import { StudentDetail } from './components/StudentDetail';
 import { SettingsPage } from './components/SettingsPage';
-import { DesignShowcase } from './components/DesignShowcase';
-import { AIChatbot } from './components/AIChatbot';
 import { Toaster } from './components/ui/sonner';
 import { Button } from './components/ui/button';
 import { Palette } from 'lucide-react';
+
+const AIChatbot = lazy(() => import('./components/AIChatbot').then((module) => ({ default: module.AIChatbot })));
+const DesignShowcase = lazy(() => import('./components/DesignShowcase').then((module) => ({ default: module.DesignShowcase })));
+
+const AUTH_STORAGE_KEY = 'nfc_absensi_auth_v1';
 
 export type UserRole = 'dosen' | 'mahasiswa' | null;
 
@@ -37,6 +40,39 @@ function App() {
   const [userName, setUserName] = useState<string>('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [showDesignShowcase, setShowDesignShowcase] = useState<boolean>(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as { role?: UserRole; name?: string };
+      if ((parsed.role === 'dosen' || parsed.role === 'mahasiswa') && typeof parsed.name === 'string' && parsed.name.trim()) {
+        setUserRole(parsed.role);
+        setUserName(parsed.name);
+        setCurrentScreen(parsed.role === 'dosen' ? 'dosen-dashboard' : 'mahasiswa-dashboard');
+      }
+    } catch {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userRole || !userName) {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      return;
+    }
+
+    localStorage.setItem(
+      AUTH_STORAGE_KEY,
+      JSON.stringify({
+        role: userRole,
+        name: userName,
+      }),
+    );
+  }, [userRole, userName]);
 
   const handleLogin = (role: UserRole, name: string) => {
     setUserRole(role);
@@ -64,7 +100,11 @@ function App() {
       <Toaster position="top-center" />
       
       {/* AI Chatbot - Available on all screens except splash */}
-      {currentScreen !== 'splash' && <AIChatbot />}
+      {currentScreen !== 'splash' && (
+        <Suspense fallback={null}>
+          <AIChatbot />
+        </Suspense>
+      )}
       
       {/* Design Showcase Toggle Button */}
       {!showDesignShowcase && currentScreen !== 'splash' && (
@@ -78,7 +118,9 @@ function App() {
       )}
 
       {showDesignShowcase ? (
-        <DesignShowcase onClose={() => setShowDesignShowcase(false)} />
+        <Suspense fallback={null}>
+          <DesignShowcase onClose={() => setShowDesignShowcase(false)} />
+        </Suspense>
       ) : (
         <>
           {currentScreen === 'splash' && (

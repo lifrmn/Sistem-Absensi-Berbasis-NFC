@@ -35,17 +35,19 @@ export function analyzeAttendancePattern(
   recentAttendance: boolean[] // array 5 pertemuan terakhir
 ): AttendancePattern {
   const totalPertemuan = totalHadir + totalTidakHadir;
-  const persentase = (totalHadir / totalPertemuan) * 100;
+  const persentase = totalPertemuan > 0 ? (totalHadir / totalPertemuan) * 100 : 0;
+  const recentCount = recentAttendance.length;
   
   // Hitung consistency menggunakan standar deviasi sederhana
   const recentHadirCount = recentAttendance.filter(a => a).length;
-  const consistency = Math.min(100, (recentHadirCount / recentAttendance.length) * 100);
+  const consistency = recentCount > 0 ? Math.min(100, (recentHadirCount / recentCount) * 100) : 0;
   
   // Deteksi trend dengan membandingkan 3 pertemuan pertama vs 3 terakhir
-  const firstHalf = recentAttendance.slice(0, Math.floor(recentAttendance.length / 2));
-  const secondHalf = recentAttendance.slice(Math.floor(recentAttendance.length / 2));
-  const firstAvg = firstHalf.filter(a => a).length / firstHalf.length;
-  const secondAvg = secondHalf.filter(a => a).length / secondHalf.length;
+  const midpoint = Math.max(1, Math.floor(recentCount / 2));
+  const firstHalf = recentAttendance.slice(0, midpoint);
+  const secondHalf = recentAttendance.slice(midpoint);
+  const firstAvg = firstHalf.length > 0 ? firstHalf.filter(a => a).length / firstHalf.length : 0;
+  const secondAvg = secondHalf.length > 0 ? secondHalf.filter(a => a).length / secondHalf.length : firstAvg;
   
   let trend: 'meningkat' | 'stabil' | 'menurun' = 'stabil';
   if (secondAvg > firstAvg + 0.2) trend = 'meningkat';
@@ -289,6 +291,7 @@ export function generateMockRecentAttendance(persentase: number): boolean[] {
     }
   }
   
-  // Shuffle untuk membuat lebih realistis
-  return attendance.sort(() => Math.random() - 0.5);
+  // Rotasi deterministik agar hasil stabil antar render.
+  const offset = Math.abs(Math.round(persentase)) % attendance.length;
+  return attendance.map((_, index) => attendance[(index + offset) % attendance.length]);
 }

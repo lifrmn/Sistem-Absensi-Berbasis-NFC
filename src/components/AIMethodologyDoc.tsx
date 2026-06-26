@@ -111,7 +111,7 @@ export function AIMethodologyDoc() {
                 if (trend == 'menurun') riskScore += 30<br />
                 if (consistency {'<'} 50) riskScore += 30<br />
                 <br />
-                riskLevel = riskScore >= 60 ? 'tinggi' : 'sedang'/'rendah'
+                riskLevel = riskScore {'>='} 60 ? 'tinggi' : 'sedang/rendah'
               </div>
             </div>
           </div>
