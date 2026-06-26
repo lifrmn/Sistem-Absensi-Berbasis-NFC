@@ -8,7 +8,7 @@ import { UserRole } from '../App';
 import { login } from '../utils/apiClient';
 
 interface LoginPageProps {
-  onLogin: (role: UserRole, name: string) => void;
+  onLogin: (role: UserRole, name: string, idNumber: string) => void;
   onRegister: () => void;
 }
 
@@ -31,7 +31,7 @@ export function LoginPage({ onLogin, onRegister }: LoginPageProps) {
     try {
       setIsSubmitting(true);
       const user = await login(username, password);
-      onLogin(user.role, user.name);
+      onLogin(user.role, user.name, user.idNumber);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal login');
     } finally {

@@ -4,6 +4,7 @@ set -euo pipefail
 if [[ ! -f .env.production ]]; then
   echo "File .env.production belum ada."
   echo "Jalankan: cp .env.production.example .env.production"
+  echo "Kemudian edit .env.production dan isi JWT_SECRET, CORS_ORIGIN, dll."
   exit 1
 fi
 
@@ -15,8 +16,12 @@ if [[ -z "${JWT_SECRET:-}" || ${#JWT_SECRET} -lt 32 ]]; then
   exit 1
 fi
 
-docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+echo ">> Building dan menjalankan containers..."
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build --wait
 
-echo "Deployment selesai."
-echo "Cek status: docker compose -f docker-compose.prod.yml ps"
-echo "Cek health: bash scripts/healthcheck-prod.sh"
+echo ""
+echo ">> Deployment selesai!"
+echo "   URL           : http://$(hostname -I | awk '{print $1}')"
+echo "   Cek status    : docker compose -f docker-compose.prod.yml ps"
+echo "   Cek logs      : docker compose -f docker-compose.prod.yml logs -f"
+echo "   Cek health    : bash scripts/healthcheck-prod.sh"

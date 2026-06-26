@@ -40,6 +40,7 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<string>('splash');
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [userName, setUserName] = useState<string>('');
+  const [userIdNumber, setUserIdNumber] = useState<string>('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [showDesignShowcase, setShowDesignShowcase] = useState<boolean>(false);
 
@@ -54,6 +55,7 @@ function App() {
         const user = await getCurrentUser();
         setUserRole(user.role);
         setUserName(user.name);
+        setUserIdNumber(user.idNumber);
         setCurrentScreen(user.role === 'dosen' ? 'dosen-dashboard' : 'mahasiswa-dashboard');
       } catch {
         clearToken();
@@ -65,18 +67,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Clean up stale auth cache on logout; no longer written on login
+    // (auth is restored via JWT token + /api/auth/me)
     if (!userRole || !userName) {
       localStorage.removeItem(AUTH_STORAGE_KEY);
-      return;
     }
-
-    localStorage.setItem(
-      AUTH_STORAGE_KEY,
-      JSON.stringify({
-        role: userRole,
-        name: userName,
-      }),
-    );
   }, [userRole, userName]);
 
   useEffect(() => {
@@ -93,9 +88,10 @@ function App() {
     }
   }, [currentScreen, userRole]);
 
-  const handleLogin = (role: UserRole, name: string) => {
+  const handleLogin = (role: UserRole, name: string, idNumber: string) => {
     setUserRole(role);
     setUserName(name);
+    setUserIdNumber(idNumber);
     if (role === 'dosen') {
       setCurrentScreen('dosen-dashboard');
     } else {
@@ -107,6 +103,7 @@ function App() {
     clearToken();
     setUserRole(null);
     setUserName('');
+    setUserIdNumber('');
     setCurrentScreen('login');
   };
 
@@ -160,63 +157,64 @@ function App() {
           )}
 
           {currentScreen === 'login' && (
-        <LoginPage 
-          onLogin={handleLogin}
-          onRegister={() => setCurrentScreen('register')}
-        />
-      )}
+            <LoginPage
+              onLogin={handleLogin}
+              onRegister={() => setCurrentScreen('register')}
+            />
+          )}
 
-      {currentScreen === 'register' && (
-        <RegisterPage onBack={() => setCurrentScreen('login')} />
-      )}
+          {currentScreen === 'register' && (
+            <RegisterPage onBack={() => setCurrentScreen('login')} />
+          )}
 
-      {currentScreen === 'dosen-dashboard' && (
-        <DosenDashboard 
-          userName={userName}
-          onCreateSession={() => setCurrentScreen('active-session')}
-          onViewSession={() => setCurrentScreen('active-session')}
-          onViewReport={() => setCurrentScreen('report')}
-          onSettings={() => setCurrentScreen('settings')}
-          onLogout={handleLogout}
-        />
-      )}
+          {currentScreen === 'dosen-dashboard' && (
+            <DosenDashboard
+              userName={userName}
+              onCreateSession={() => setCurrentScreen('active-session')}
+              onViewSession={() => setCurrentScreen('active-session')}
+              onViewReport={() => setCurrentScreen('report')}
+              onSettings={() => setCurrentScreen('settings')}
+              onLogout={handleLogout}
+            />
+          )}
 
-      {currentScreen === 'mahasiswa-dashboard' && (
-        <MahasiswaDashboard 
-          userName={userName}
-          onTapNFC={() => setCurrentScreen('nfc-scan')}
-        />
-      )}
+          {currentScreen === 'mahasiswa-dashboard' && (
+            <MahasiswaDashboard
+              userName={userName}
+              userIdNumber={userIdNumber}
+              onTapNFC={() => setCurrentScreen('nfc-scan')}
+            />
+          )}
 
-      {currentScreen === 'nfc-scan' && (
-        <NFCScanOverlay 
-          onSuccess={handleTapSuccess}
-          onBack={() => setCurrentScreen('mahasiswa-dashboard')}
-        />
-      )}
+          {currentScreen === 'nfc-scan' && (
+            <NFCScanOverlay
+              onSuccess={handleTapSuccess}
+              onBack={() => setCurrentScreen('mahasiswa-dashboard')}
+            />
+          )}
 
-      {currentScreen === 'active-session' && (
-        <ActiveSession 
-          onBack={() => setCurrentScreen('dosen-dashboard')}
-        />
-      )}
+          {currentScreen === 'active-session' && (
+            <ActiveSession
+              onBack={() => setCurrentScreen('dosen-dashboard')}
+            />
+          )}
 
-      {currentScreen === 'report' && (
-        <AttendanceReport 
-          onBack={() => setCurrentScreen('dosen-dashboard')}
-          onViewDetail={handleViewStudentDetail}
-        />
-      )}
+          {currentScreen === 'report' && (
+            <AttendanceReport
+              onBack={() => setCurrentScreen('dosen-dashboard')}
+              onViewDetail={handleViewStudentDetail}
+            />
+          )}
 
-      {currentScreen === 'student-detail' && selectedStudent && (
-        <StudentDetail 
-          student={selectedStudent}
-          onBack={() => setCurrentScreen('report')}
-        />
-      )}
+          {currentScreen === 'student-detail' && selectedStudent && (
+            <StudentDetail
+              student={selectedStudent}
+              onBack={() => setCurrentScreen('report')}
+            />
+          )}
 
           {currentScreen === 'settings' && (
-            <SettingsPage 
+            <SettingsPage
               userName={userName}
               userRole={userRole}
               onBack={() => setCurrentScreen('dosen-dashboard')}

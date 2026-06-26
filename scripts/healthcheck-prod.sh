@@ -4,10 +4,10 @@ set -euo pipefail
 echo "== Service status =="
 docker compose -f docker-compose.prod.yml ps
 
-echo "\n== Backend health =="
-curl -fsS http://localhost/api/health | cat
+printf '\n== Backend health ==\n'
+curl -fsS http://localhost/api/health
 
-echo "\n== Frontend health =="
-curl -fsS http://localhost/healthz | cat
+printf '\n== Frontend health ==\n'
+curl -fsS http://localhost/healthz
 
-echo "\nSemua healthcheck lulus."
+printf '\nSemua healthcheck lulus.\n'

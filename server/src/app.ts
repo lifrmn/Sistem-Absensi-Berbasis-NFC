@@ -250,6 +250,10 @@ app.post(
   requireRole(['dosen']),
   asyncHandler(async (req, res) => {
     const sessionId = Number(req.params.sessionId);
+    if (!Number.isInteger(sessionId) || sessionId <= 0) {
+      res.status(400).json({ message: 'ID sesi tidak valid' });
+      return;
+    }
     const payload = manualMarkSchema.parse(req.body);
 
     const enrolled = db
@@ -280,6 +284,10 @@ app.post(
   requireRole(['dosen']),
   (req: AuthenticatedRequest, res) => {
     const sessionId = Number(req.params.sessionId);
+    if (!Number.isInteger(sessionId) || sessionId <= 0) {
+      res.status(400).json({ message: 'ID sesi tidak valid' });
+      return;
+    }
     const count = (
       db.prepare(
         `

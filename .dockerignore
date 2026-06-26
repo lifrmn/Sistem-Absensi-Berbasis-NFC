@@ -1,5 +1,6 @@
 node_modules
 build
+dist
 test-results
 .git
 .github
@@ -9,3 +10,5 @@ test-results
 !.env.production.example
 npm-debug.log*
 .vscode
+# Never ship the SQLite database files into the image
+server/data/

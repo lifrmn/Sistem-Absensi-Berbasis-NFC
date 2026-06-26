@@ -9,10 +9,11 @@ import { getMahasiswaAttendanceSummary } from '../utils/apiClient';
 
 interface MahasiswaDashboardProps {
   userName: string;
+  userIdNumber: string;
   onTapNFC: () => void;
 }
 
-export function MahasiswaDashboard({ userName, onTapNFC }: MahasiswaDashboardProps) {
+export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: MahasiswaDashboardProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasAttendedToday, setHasAttendedToday] = useState(false);
   const [todayAttendanceTime, setTodayAttendanceTime] = useState<string | null>(null);
@@ -88,7 +89,7 @@ export function MahasiswaDashboard({ userName, onTapNFC }: MahasiswaDashboardPro
               </div>
               <div className="flex-1">
                 <h2 className="text-xl text-gray-900">{userName}</h2>
-                <p className="text-gray-600 text-sm">NIM: A001234567</p>
+                <p className="text-gray-600 text-sm">NIM: {userIdNumber || '—'}</p>
                 <Badge className="mt-1 bg-[#0052CC]/10 text-[#0052CC] hover:bg-[#0052CC]/10 text-xs">Mahasiswa Aktif</Badge>
               </div>
             </div>

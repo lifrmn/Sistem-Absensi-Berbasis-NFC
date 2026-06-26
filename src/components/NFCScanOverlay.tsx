@@ -39,11 +39,12 @@ export function NFCScanOverlay({ onSuccess, onBack }: NFCScanOverlayProps) {
 
   useEffect(() => {
     startScan();
-
-    return () => {
-      clearAllTimers();
-    };
-  }, [onSuccess]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => clearAllTimers();
+  // Intentionally empty: scan should start once on mount only.
+  // onSuccess is captured via closure and is stable for the overlay's lifetime.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRetry = () => {
     startScan();
