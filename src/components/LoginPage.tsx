@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { GraduationCap, Nfc, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { Nfc, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Alert, AlertDescription } from './ui/alert';
 import { UserRole } from '../App';
 import { login } from '../utils/apiClient';
+import { UnismuhLogoWithFallback } from './UnismuhLogo';
 
 interface LoginPageProps {
   onLogin: (role: UserRole, name: string, idNumber: string) => void;
@@ -51,7 +52,7 @@ export function LoginPage({ onLogin, onRegister }: LoginPageProps) {
           <div className="flex items-center justify-center gap-4">
             <div className="relative">
               <div className="absolute inset-0 bg-white/10 rounded-full blur-xl"></div>
-              <GraduationCap className="w-28 h-28 text-white drop-shadow-2xl relative z-10" />
+              <UnismuhLogoWithFallback size="w-28 h-28" className="relative z-10" />
               <div className="absolute -bottom-2 -right-2 bg-[#FFC107] rounded-full p-3 shadow-2xl animate-pulse-nfc">
                 <Nfc className="w-9 h-9 text-[#0052CC]" />
               </div>
@@ -89,7 +90,7 @@ export function LoginPage({ onLogin, onRegister }: LoginPageProps) {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <GraduationCap className="w-12 h-12 text-[#0052CC]" />
+              <UnismuhLogoWithFallback size="w-12 h-12" fallbackClassName="text-[#0052CC]" />
               <Nfc className="w-8 h-8 text-[#FFC107]" />
             </div>
             <h2 className="text-[#0052CC] text-3xl">UNISMUH</h2>

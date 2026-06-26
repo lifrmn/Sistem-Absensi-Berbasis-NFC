@@ -1,6 +1,7 @@
-import { GraduationCap, Nfc, Sparkles } from 'lucide-react';
+import { Nfc, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { motion } from 'motion/react';
+import { UnismuhLogoWithFallback } from './UnismuhLogo';
 
 interface SplashScreenProps {
   onStart: () => void;
@@ -59,7 +60,7 @@ export function SplashScreen({ onStart }: SplashScreenProps) {
                 ease: "easeInOut",
               }}
             >
-              <GraduationCap className="w-24 h-24 text-white drop-shadow-2xl" />
+              <UnismuhLogoWithFallback size="w-24 h-24" fallbackClassName="text-white" />
             </motion.div>
             <motion.div 
               className="absolute -bottom-2 -right-2 bg-[#FFC107] rounded-full p-3 shadow-2xl"

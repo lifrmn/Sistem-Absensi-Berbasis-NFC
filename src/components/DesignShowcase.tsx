@@ -1,6 +1,5 @@
 import { motion } from 'motion/react';
 import { 
-  GraduationCap, 
   Nfc, 
   CheckCircle, 
   Users, 
@@ -17,6 +16,7 @@ import {
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
+import { UnismuhLogoWithFallback } from './UnismuhLogo';
 
 interface DesignShowcaseProps {
   onClose: () => void;
@@ -108,7 +108,7 @@ export function DesignShowcase({ onClose }: DesignShowcaseProps) {
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center gap-4 mb-6">
-              <GraduationCap className="w-20 h-20" />
+              <UnismuhLogoWithFallback size="w-20 h-20" />
               <Nfc className="w-16 h-16 text-[#FFC107] animate-pulse-nfc" />
             </div>
             <h1 className="text-6xl mb-4 tracking-tight">UNISMUH NFC Attendance</h1>
