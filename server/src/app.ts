@@ -314,6 +314,88 @@ app.post('/api/attendance/tap', authRequired, requireRole(['mahasiswa']), (req: 
   res.json({ message: 'Absensi berhasil tercatat' });
 });
 
+app.get('/api/attendance/me', authRequired, requireRole(['mahasiswa']), (req: AuthenticatedRequest, res) => {
+  const userId = req.user!.id;
+  const todayIsoDate = new Date().toISOString().slice(0, 10);
+
+  const totalSessions = (
+    db.prepare(
+      `
+      SELECT COUNT(*) as count
+      FROM enrollments e
+      JOIN sessions s ON s.id = e.session_id
+      WHERE e.user_id = ?
+    `,
+    ).get(userId) as { count: number }
+  ).count;
+
+  const totalHadir = (
+    db.prepare(
+      `
+      SELECT COUNT(*) as count
+      FROM attendance a
+      JOIN sessions s ON s.id = a.session_id
+      WHERE a.user_id = ? AND a.status IN ('hadir', 'manual')
+    `,
+    ).get(userId) as { count: number }
+  ).count;
+
+  const todayAttendance = db
+    .prepare(
+      `
+      SELECT a.tap_time as tapTime
+      FROM attendance a
+      JOIN sessions s ON s.id = a.session_id
+      WHERE a.user_id = ? AND s.class_date = ?
+      ORDER BY a.id DESC
+      LIMIT 1
+    `,
+    )
+    .get(userId, todayIsoDate) as { tapTime: string | null } | undefined;
+
+  const history = db
+    .prepare(
+      `
+      SELECT
+        s.class_date as classDate,
+        s.course as mataKuliah,
+        CASE WHEN a.status IN ('hadir', 'manual') THEN 'hadir' ELSE 'tidak-hadir' END as status,
+        a.tap_time as waktu
+      FROM enrollments e
+      JOIN sessions s ON s.id = e.session_id
+      LEFT JOIN attendance a ON a.session_id = e.session_id AND a.user_id = e.user_id
+      WHERE e.user_id = ?
+      ORDER BY s.class_date DESC, s.id DESC
+      LIMIT 10
+    `,
+    )
+    .all(userId) as Array<{
+      classDate: string;
+      mataKuliah: string;
+      status: 'hadir' | 'tidak-hadir';
+      waktu: string | null;
+    }>;
+
+  const formattedHistory = history.map((row) => ({
+    date: new Date(row.classDate).toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }),
+    mataKuliah: row.mataKuliah.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+    status: row.status,
+    waktu: row.waktu || '-',
+  }));
+
+  res.json({
+    hasAttendedToday: Boolean(todayAttendance),
+    todayAttendanceTime: todayAttendance?.tapTime || null,
+    totalHadir,
+    persentase: totalSessions > 0 ? Math.round((totalHadir / totalSessions) * 100) : 0,
+    history: formattedHistory,
+  });
+});
+
 app.get('/api/reports/attendance', authRequired, requireRole(['dosen']), (req: AuthenticatedRequest, res) => {
   const course = String(req.query.course || 'pemrograman-web');
 

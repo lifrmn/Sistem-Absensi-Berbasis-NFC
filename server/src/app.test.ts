@@ -45,4 +45,22 @@ describe('API integration', () => {
     expect(loginResponse.status).toBe(200);
     expect(loginResponse.body.user.role).toBe('mahasiswa');
   });
+
+  it('should return mahasiswa attendance summary and history', async () => {
+    const loginResponse = await request(app).post('/api/auth/login').send({
+      username: 'a001',
+      password: 'Mahasiswa@12345',
+    });
+
+    expect(loginResponse.status).toBe(200);
+
+    const summaryResponse = await request(app)
+      .get('/api/attendance/me')
+      .set('Authorization', `Bearer ${loginResponse.body.token}`);
+
+    expect(summaryResponse.status).toBe(200);
+    expect(typeof summaryResponse.body.totalHadir).toBe('number');
+    expect(typeof summaryResponse.body.persentase).toBe('number');
+    expect(Array.isArray(summaryResponse.body.history)).toBe(true);
+  });
 });

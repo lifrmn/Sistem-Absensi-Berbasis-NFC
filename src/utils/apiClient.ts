@@ -20,6 +20,21 @@ export interface SessionData {
   startTime: string;
 }
 
+export interface AttendanceHistoryItem {
+  date: string;
+  mataKuliah: string;
+  status: 'hadir' | 'tidak-hadir';
+  waktu: string;
+}
+
+export interface MahasiswaAttendanceSummary {
+  hasAttendedToday: boolean;
+  todayAttendanceTime: string | null;
+  totalHadir: number;
+  persentase: number;
+  history: AttendanceHistoryItem[];
+}
+
 interface SessionResponse {
   session: SessionData;
   present: Student[];
@@ -119,6 +134,10 @@ export async function sendSessionNotification(sessionId: number): Promise<{ coun
 
 export async function tapAttendance(): Promise<void> {
   await request('/attendance/tap', { method: 'POST' });
+}
+
+export async function getMahasiswaAttendanceSummary(): Promise<MahasiswaAttendanceSummary> {
+  return request('/attendance/me');
 }
 
 export async function getAttendanceReport(course: string): Promise<Student[]> {

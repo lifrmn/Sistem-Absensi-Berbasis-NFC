@@ -1,25 +1,57 @@
+import { useEffect, useState } from 'react';
 import { Nfc, CheckCircle, Clock, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
+import { toast } from 'sonner';
+import { getMahasiswaAttendanceSummary } from '../utils/apiClient';
 
 interface MahasiswaDashboardProps {
   userName: string;
   onTapNFC: () => void;
 }
 
-const attendanceHistory = [
-  { date: '24 Okt 2025', mataKuliah: 'Pemrograman Web', status: 'hadir', waktu: '08:35' },
-  { date: '23 Okt 2025', mataKuliah: 'Basis Data', status: 'hadir', waktu: '10:15' },
-  { date: '22 Okt 2025', mataKuliah: 'Algoritma', status: 'hadir', waktu: '08:40' },
-  { date: '21 Okt 2025', mataKuliah: 'Pemrograman Web', status: 'tidak-hadir', waktu: '-' },
-  { date: '19 Okt 2025', mataKuliah: 'Basis Data', status: 'hadir', waktu: '10:20' },
-];
-
 export function MahasiswaDashboard({ userName, onTapNFC }: MahasiswaDashboardProps) {
-  const hasAttendedToday = false; // Mock status
-  const todayAttendanceTime = '08:35';
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasAttendedToday, setHasAttendedToday] = useState(false);
+  const [todayAttendanceTime, setTodayAttendanceTime] = useState<string | null>(null);
+  const [totalHadir, setTotalHadir] = useState(0);
+  const [persentase, setPersentase] = useState(0);
+  const [attendanceHistory, setAttendanceHistory] = useState<Array<{
+    date: string;
+    mataKuliah: string;
+    status: 'hadir' | 'tidak-hadir';
+    waktu: string;
+  }>>([]);
+
+  useEffect(() => {
+    const loadAttendanceSummary = async () => {
+      try {
+        setIsLoading(true);
+        const summary = await getMahasiswaAttendanceSummary();
+        setHasAttendedToday(summary.hasAttendedToday);
+        setTodayAttendanceTime(summary.todayAttendanceTime);
+        setTotalHadir(summary.totalHadir);
+        setPersentase(summary.persentase);
+        setAttendanceHistory(summary.history);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Gagal memuat data kehadiran');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAttendanceSummary();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center text-gray-600">
+        Memuat data kehadiran...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20">
@@ -73,7 +105,7 @@ export function MahasiswaDashboard({ userName, onTapNFC }: MahasiswaDashboardPro
                       <p className="text-sm text-gray-600 mb-1">Status Kehadiran Hari Ini</p>
                       <p className="text-green-700 flex items-center gap-2">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        <span>Hadir - Pukul {todayAttendanceTime}</span>
+                        <span>Hadir - Pukul {todayAttendanceTime || '-'}</span>
                       </p>
                     </div>
                   </>
@@ -120,7 +152,7 @@ export function MahasiswaDashboard({ userName, onTapNFC }: MahasiswaDashboardPro
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl text-green-600 mb-1">42</div>
+              <div className="text-4xl text-green-600 mb-1">{totalHadir}</div>
               <p className="text-sm text-gray-500">Kehadiran</p>
             </CardContent>
           </Card>
@@ -133,7 +165,7 @@ export function MahasiswaDashboard({ userName, onTapNFC }: MahasiswaDashboardPro
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl bg-gradient-to-r from-[#0052CC] to-[#003D99] bg-clip-text text-transparent mb-1">84%</div>
+              <div className="text-4xl bg-gradient-to-r from-[#0052CC] to-[#003D99] bg-clip-text text-transparent mb-1">{persentase}%</div>
               <p className="text-sm text-gray-500">Kehadiran</p>
             </CardContent>
           </Card>
