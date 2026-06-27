@@ -125,7 +125,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_15%_20%,rgba(29,78,216,0.08),transparent_35%),radial-gradient(circle_at_82%_4%,rgba(14,116,144,0.1),transparent_25%),#f6f9ff]">
       <Toaster position="top-center" />
       
       {/* AI Chatbot - Available on all screens except splash */}

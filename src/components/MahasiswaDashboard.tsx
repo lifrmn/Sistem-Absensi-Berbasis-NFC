@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Nfc, CheckCircle, Clock, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
 import { getMahasiswaAttendanceSummary } from '../utils/apiClient';
@@ -48,19 +48,20 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center text-gray-600">
+      <div className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(59,130,246,0.1),transparent_35%),#f4f8ff] flex items-center justify-center text-slate-600">
         Memuat data kehadiran...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_10%_15%,rgba(59,130,246,0.12),transparent_35%),radial-gradient(circle_at_90%_0%,rgba(14,116,144,0.1),transparent_25%),#f5f9ff] pb-20">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#0052CC] via-[#0052CC] to-[#003D99] text-white p-6 relative overflow-hidden">
+      <header className="bg-gradient-to-r from-[#0b3f99] via-[#0a4ec2] to-[#0d2a66] text-white p-6 relative overflow-hidden shadow-lg">
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#FFC107]/10 rounded-full blur-2xl"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-[#FACC15]/20 rounded-full blur-2xl"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(150deg,rgba(255,255,255,0.1)_0%,transparent_45%)]"></div>
         
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-3 mb-4">
@@ -68,7 +69,7 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
               <Nfc className="w-6 h-6 animate-pulse-nfc" />
             </div>
             <div>
-              <h1 className="text-xl tracking-tight">Absensi NFC</h1>
+              <h1 className="text-xl tracking-tight font-display">Absensi NFC</h1>
               <p className="text-white/80 text-sm">Informatika UNISMUH</p>
             </div>
           </div>
@@ -77,19 +78,18 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
 
       <div className="max-w-2xl mx-auto px-4 -mt-8">
         {/* Profile Card */}
-        <Card className="mb-6 shadow-xl border-2 border-white bg-gradient-to-br from-white to-blue-50/30">
+        <Card className="mb-6 shadow-xl border border-white/80 bg-white/85 backdrop-blur-sm">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="relative">
                 <Avatar className="w-16 h-16 border-4 border-white shadow-lg">
-                  <AvatarImage src="https://images.unsplash.com/photo-1655977237812-ee6beb137203?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsZWdlJTIwc3R1ZGVudCUyMHBvcnRyYWl0fGVufDF8fHx8MTc2MTQ1MzQ3OHww&ixlib=rb-4.1.0&q=80&w=1080" />
-                  <AvatarFallback className="bg-gradient-to-br from-[#0052CC] to-[#003D99] text-white text-xl">{userName.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-[#0052CC] to-[#003D99] text-white text-xl font-display">{userName.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
               </div>
               <div className="flex-1">
-                <h2 className="text-xl text-gray-900">{userName}</h2>
-                <p className="text-gray-600 text-sm">NIM: {userIdNumber || '—'}</p>
+                <h2 className="text-xl text-slate-900 font-display">{userName}</h2>
+                <p className="text-slate-600 text-sm">NIM: {userIdNumber || '-'}</p>
                 <Badge className="mt-1 bg-[#0052CC]/10 text-[#0052CC] hover:bg-[#0052CC]/10 text-xs">Mahasiswa Aktif</Badge>
               </div>
             </div>
@@ -145,7 +145,7 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
 
         {/* Attendance Summary */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <Card className="border-l-4 border-l-green-500 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-white to-green-50/20">
+          <Card className="border border-white/80 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-white to-green-50/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-gray-600 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
@@ -158,7 +158,7 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-[#0052CC] shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-white to-blue-50/20">
+          <Card className="border border-white/80 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-white to-blue-50/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-gray-600 flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-[#0052CC]"></div>
@@ -173,9 +173,9 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
         </div>
 
         {/* Attendance History */}
-        <Card>
+        <Card className="border border-white/80 shadow-lg bg-white/85 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 font-display">
               <Calendar className="w-5 h-5" />
               Riwayat Kehadiran
             </CardTitle>
@@ -185,11 +185,11 @@ export function MahasiswaDashboard({ userName, userIdNumber, onTapNFC }: Mahasis
               {attendanceHistory.map((item, index) => (
                 <div 
                   key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex-1">
-                    <p className="text-gray-900">{item.mataKuliah}</p>
-                    <p className="text-sm text-gray-600">{item.date}</p>
+                    <p className="text-slate-900">{item.mataKuliah}</p>
+                    <p className="text-sm text-slate-600">{item.date}</p>
                   </div>
                   <div className="text-right">
                     {item.status === 'hadir' ? (

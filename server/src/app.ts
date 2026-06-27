@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import fs from 'fs';
+import path from 'path';
 import { z } from 'zod';
 import { env } from './env';
 import { db } from './db';
@@ -457,6 +459,21 @@ app.get('/api/reports/attendance', authRequired, requireRole(['dosen']), (req: A
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
+
+// In single-container production, backend serves the built frontend bundle.
+const frontendBuildDir = path.resolve(process.cwd(), 'build');
+const frontendIndexPath = path.join(frontendBuildDir, 'index.html');
+
+if (fs.existsSync(frontendIndexPath)) {
+  app.use(express.static(frontendBuildDir));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      next();
+      return;
+    }
+    res.sendFile(frontendIndexPath);
+  });
+}
 
 app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof z.ZodError) {

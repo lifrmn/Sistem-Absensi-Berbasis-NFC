@@ -16,7 +16,7 @@ if [[ -z "${JWT_SECRET:-}" || ${#JWT_SECRET} -lt 32 ]]; then
   exit 1
 fi
 
-echo ">> Building dan menjalankan containers..."
+echo ">> Building dan menjalankan container..."
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build --wait
 
 echo ""

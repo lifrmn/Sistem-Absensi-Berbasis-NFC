@@ -33,15 +33,12 @@ Catatan:
 ## Deploy Production Terintegrasi
 
 Arsitektur production:
-- `frontend` container: Nginx serve build React + reverse proxy `/api`.
-- `backend` container: Express API pada port internal 4000.
+- `backend` container tunggal: build React sekali, lalu Express serve frontend + API `/api`.
 - Persistensi database SQLite pada volume Docker `app_data`.
 
 File deployment:
-- `Dockerfile.frontend`
 - `Dockerfile.backend`
 - `docker-compose.prod.yml`
-- `deploy/nginx/default.conf`
 - `scripts/deploy-prod.sh`
 - `scripts/healthcheck-prod.sh`
 
@@ -60,7 +57,7 @@ Jalankan:
 
 Script akan:
 - Validasi `.env.production` dan `JWT_SECRET`.
-- Build image backend/frontend.
+- Build image backend (termasuk build frontend).
 - Start container dengan `docker compose`.
 
 ### 3) Cek health dan status
@@ -69,8 +66,8 @@ Script akan:
 
 Atau manual:
 - `docker compose -f docker-compose.prod.yml ps`
-- `curl http://localhost/healthz`
 - `curl http://localhost/api/health`
+- `curl http://localhost/`
 
 ### 4) Stop / restart
 
