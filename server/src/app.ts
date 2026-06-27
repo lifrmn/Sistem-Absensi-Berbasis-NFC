@@ -474,7 +474,7 @@ const frontendIndexPath = path.join(frontendBuildDir, 'index.html');
 
 if (fs.existsSync(frontendIndexPath)) {
   app.use(express.static(frontendBuildDir));
-  app.get('*', (req, res, next) => {
+  app.get('/{*path}', (req, res, next) => {
     if (req.path.startsWith('/api/')) {
       next();
       return;

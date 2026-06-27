@@ -201,14 +201,14 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(14,116,144,0.1),transparent_30%),radial-gradient(circle_at_85%_5%,rgba(59,130,246,0.12),transparent_30%),#f5f9ff] p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Button
             variant="ghost"
             onClick={onBack}
-            className="mb-4"
+            className="mb-4 text-slate-600"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Kembali ke Dashboard
@@ -216,8 +216,8 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl text-gray-900 mb-2">Laporan Kehadiran</h1>
-              <p className="text-gray-600">Rekap kehadiran mahasiswa per periode</p>
+              <h1 className="text-3xl font-display text-slate-900 mb-2">Laporan Kehadiran</h1>
+              <p className="text-slate-600">Rekap kehadiran mahasiswa per periode</p>
             </div>
             <div className="flex gap-2">
               <Button 
@@ -241,10 +241,10 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-gray-600 mb-2 block">Mata Kuliah</label>
+              <label className="text-sm text-slate-600 mb-2 block">Mata Kuliah</label>
               <Select value={mataKuliah} onValueChange={setMataKuliah}>
                 <SelectTrigger>
                   <SelectValue />
@@ -259,7 +259,7 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
             </div>
 
             <div>
-              <label className="text-sm text-gray-600 mb-2 block">Periode</label>
+              <label className="text-sm text-slate-600 mb-2 block">Periode</label>
               <Select value={periode} onValueChange={setPeriode}>
                 <SelectTrigger>
                   <SelectValue />
@@ -285,25 +285,25 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <p className="text-sm text-gray-600 mb-1">Total Mahasiswa</p>
-            <p className="text-3xl text-gray-900">{reportData.length}</p>
+          <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl p-4">
+            <p className="text-sm text-slate-600 mb-1">Total Mahasiswa</p>
+            <p className="text-3xl font-display text-slate-900">{reportData.length}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <p className="text-sm text-gray-600 mb-1">Rata-rata Kehadiran</p>
-            <p className="text-3xl text-green-600">
+          <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl p-4">
+            <p className="text-sm text-slate-600 mb-1">Rata-rata Kehadiran</p>
+            <p className="text-3xl font-display text-green-600">
               {averagePercentage}%
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <p className="text-sm text-gray-600 mb-1">Kehadiran ≥ 80%</p>
-            <p className="text-3xl text-[#0052CC]">
+          <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl p-4">
+            <p className="text-sm text-slate-600 mb-1">Kehadiran ≥ 80%</p>
+            <p className="text-3xl font-display text-[#0052CC]">
               {reportData.filter(s => (s.persentase || 0) >= 80).length}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <p className="text-sm text-gray-600 mb-1">Kehadiran {'<'} 60%</p>
-            <p className="text-3xl text-red-600">
+          <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl p-4">
+            <p className="text-sm text-slate-600 mb-1">Kehadiran {'<'} 60%</p>
+            <p className="text-3xl font-display text-red-600">
               {reportData.filter(s => (s.persentase || 0) < 60).length}
             </p>
           </div>
@@ -326,7 +326,7 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
 
           <TabsContent value="table">
             {/* Table */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -340,7 +340,7 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
                 </TableHeader>
                 <TableBody>
                   {reportData.map((student) => (
-                    <TableRow key={student.id} className="hover:bg-gray-50">
+                    <TableRow key={student.id} className="hover:bg-slate-50">
                       <TableCell>{student.nama}</TableCell>
                       <TableCell>{student.nim}</TableCell>
                       <TableCell className="text-center">{student.totalHadir}</TableCell>
@@ -361,7 +361,7 @@ export function AttendanceReport({ onBack, onViewDetail }: AttendanceReportProps
                   ))}
                   {!isLoading && reportData.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                      <TableCell colSpan={6} className="text-center text-slate-500 py-8">
                         Belum ada data laporan untuk mata kuliah ini.
                       </TableCell>
                     </TableRow>

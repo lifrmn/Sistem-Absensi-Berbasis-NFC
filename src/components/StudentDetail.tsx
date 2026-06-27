@@ -49,23 +49,23 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
                 <span className="text-white text-3xl">{student.nama.charAt(0)}</span>
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl text-gray-900 mb-2">{student.nama}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-600">
+                <h2 className="text-2xl text-slate-900 font-display mb-2">{student.nama}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-600">
                   <div>
                     <p className="text-sm">NIM</p>
-                    <p className="text-gray-900">{student.nim}</p>
+                    <p className="text-slate-900">{student.nim}</p>
                   </div>
                   <div>
                     <p className="text-sm">Mata Kuliah</p>
-                    <p className="text-gray-900">Pemrograman Web</p>
+                    <p className="text-slate-900">Pemrograman Web</p>
                   </div>
                   <div>
                     <p className="text-sm">Email</p>
-                    <p className="text-gray-900">{student.nim.toLowerCase()}@student.unismuh.ac.id</p>
+                    <p className="text-slate-900">{student.nim.toLowerCase()}@student.unismuh.ac.id</p>
                   </div>
                   <div>
                     <p className="text-sm">Program Studi</p>
-                    <p className="text-gray-900">Teknik Informatika</p>
+                    <p className="text-slate-900">Teknik Informatika</p>
                   </div>
                 </div>
               </div>
@@ -75,36 +75,36 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card>
+          <Card className="border border-white/80 shadow-md bg-white/85 backdrop-blur-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-gray-600">Total Pertemuan</CardTitle>
+              <CardTitle className="text-sm text-slate-600">Total Pertemuan</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl text-gray-900">{totalPertemuan}</div>
+              <div className="text-3xl font-display text-slate-900">{totalPertemuan}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border border-white/80 shadow-md bg-white/85 backdrop-blur-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-gray-600">Total Hadir</CardTitle>
+              <CardTitle className="text-sm text-slate-600">Total Hadir</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl text-green-600">{student.totalHadir}</div>
+              <div className="text-3xl font-display text-green-600">{student.totalHadir}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border border-white/80 shadow-md bg-white/85 backdrop-blur-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-gray-600">Total Tidak Hadir</CardTitle>
+              <CardTitle className="text-sm text-slate-600">Total Tidak Hadir</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl text-red-600">{student.totalTidakHadir}</div>
+              <div className="text-3xl font-display text-red-600">{student.totalTidakHadir}</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border border-white/80 shadow-md bg-white/85 backdrop-blur-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-gray-600">Persentase Kehadiran</CardTitle>
+              <CardTitle className="text-sm text-slate-600">Persentase Kehadiran</CardTitle>
             </CardHeader>
             <CardContent>
               <div className={`text-3xl ${(student.persentase || 0) >= 80 ? 'text-green-600' : (student.persentase || 0) >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
@@ -115,7 +115,7 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
         </div>
 
         {/* Chart Visualization */}
-        <Card className="mb-6">
+        <Card className="mb-6 border border-white/80 shadow-md bg-white/85 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5" />
@@ -130,7 +130,7 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
                     className={`w-full rounded-t ${item.status === 'hadir' ? 'bg-green-500' : 'bg-red-300'}`}
                     style={{ height: item.status === 'hadir' ? '80%' : '20%' }}
                   />
-                  <p className="text-xs text-gray-600 transform -rotate-45 origin-top-left mt-2 whitespace-nowrap">
+                  <p className="text-xs text-slate-600 transform -rotate-45 origin-top-left mt-2 whitespace-nowrap">
                     {item.tanggal.split(' ')[0]}
                   </p>
                 </div>
@@ -139,18 +139,18 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
             <div className="flex justify-center gap-6 mt-6">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm text-gray-600">Hadir</span>
+                <span className="text-sm text-slate-600">Hadir</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-300 rounded"></div>
-                <span className="text-sm text-gray-600">Tidak Hadir</span>
+                <span className="text-sm text-slate-600">Tidak Hadir</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Attendance History */}
-        <Card>
+        <Card className="border border-white/80 shadow-md bg-white/85 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5" />
@@ -162,7 +162,7 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
               {attendanceDetails.map((item, index) => (
                 <div 
                   key={index}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     {item.status === 'hadir' ? (
@@ -171,9 +171,9 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
                       <XCircle className="w-6 h-6 text-red-600" />
                     )}
                     <div>
-                      <p className="text-gray-900">{item.tanggal}</p>
+                      <p className="text-slate-900">{item.tanggal}</p>
                       {item.status === 'hadir' && item.waktu && (
-                        <p className="text-sm text-gray-600">Waktu: {item.waktu}</p>
+                        <p className="text-sm text-slate-600">Waktu: {item.waktu}</p>
                       )}
                     </div>
                   </div>
