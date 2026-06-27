@@ -130,7 +130,7 @@ function App() {
       
       {/* AI Chatbot - Available on all screens except splash */}
       {currentScreen !== 'splash' && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="fixed bottom-6 left-6 w-14 h-14 rounded-full bg-blue-100 animate-pulse" />}>
           <AIChatbot />
         </Suspense>
       )}

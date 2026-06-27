@@ -211,6 +211,14 @@ app.get('/api/sessions/active', authRequired, (req: AuthenticatedRequest, res) =
     return;
   }
 
+  type SessionStudent = {
+    id: number;
+    nama: string;
+    nim: string;
+    status: 'hadir' | 'manual' | 'belum-hadir';
+    waktuTap: string | null;
+  };
+
   const students = db
     .prepare(`
       SELECT
@@ -229,10 +237,10 @@ app.get('/api/sessions/active', authRequired, (req: AuthenticatedRequest, res) =
       WHERE e.session_id = ?
       ORDER BY u.name ASC
     `)
-    .all(session.id);
+    .all(session.id) as SessionStudent[];
 
-  const present = students.filter((item: any) => item.status !== 'belum-hadir');
-  const absent = students.filter((item: any) => item.status === 'belum-hadir');
+  const present = students.filter((item) => item.status !== 'belum-hadir');
+  const absent = students.filter((item) => item.status === 'belum-hadir');
 
   res.json({
     session,
@@ -322,7 +330,7 @@ app.post('/api/attendance/tap', authRequired, requireRole(['mahasiswa']), (req: 
     ON CONFLICT(session_id, user_id)
     DO UPDATE SET status = 'hadir', tap_time = excluded.tap_time, manual_reason = NULL
   `,
-  ).run(session.id, req.user!.id, new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+  ).run(session.id, req.user!.id, new Date().toISOString().slice(11, 16));
 
   res.json({ message: 'Absensi berhasil tercatat' });
 });

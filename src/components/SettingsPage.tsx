@@ -5,7 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { toast } from 'sonner';
 import { UserRole } from '../App';
 
@@ -52,8 +52,8 @@ export function SettingsPage({ userName, userRole, onBack }: SettingsPageProps) 
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      toast.error('Password minimal 6 karakter');
+    if (passwordData.newPassword.length < 8) {
+      toast.error('Password minimal 8 karakter');
       return;
     }
 
@@ -70,7 +70,7 @@ export function SettingsPage({ userName, userRole, onBack }: SettingsPageProps) 
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(14,116,144,0.1),transparent_30%),radial-gradient(circle_at_85%_5%,rgba(59,130,246,0.12),transparent_30%),#f5f9ff] p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <Button
@@ -103,11 +103,7 @@ export function SettingsPage({ userName, userRole, onBack }: SettingsPageProps) 
               <form onSubmit={handleSaveProfile} className="space-y-6">
                 <div className="flex items-center gap-6 mb-6">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage src={userRole === 'dosen' 
-                      ? 'https://images.unsplash.com/photo-1758685734503-58a8accc24e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB0ZWFjaGVyJTIwcHJvZmVzc29yfGVufDF8fHx8MTc2MTQ2MzE0M3ww&ixlib=rb-4.1.0&q=80&w=1080'
-                      : 'https://images.unsplash.com/photo-1655977237812-ee6beb137203?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsZWdlJTIwc3R1ZGVudCUyMHBvcnRyYWl0fGVufDF8fHx8MTc2MTQ1MzQ3OHww&ixlib=rb-4.1.0&q=80&w=1080'
-                    } />
-                    <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="bg-gradient-to-br from-[#0052CC] to-[#003D99] text-white text-2xl font-display">{userName.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <Button type="button" variant="outline" size="sm">
