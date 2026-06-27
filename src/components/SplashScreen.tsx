@@ -9,10 +9,10 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onStart }: SplashScreenProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0052CC] via-[#0052CC] to-[#003D99] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0b3f99] via-[#0a4ec2] to-[#0d2a66] flex items-center justify-center p-6 relative overflow-hidden">
       {/* Animated background circles */}
       <motion.div
-        className="absolute top-20 left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"
+        className="absolute top-20 left-10 w-64 h-64 bg-cyan-200/20 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.5, 0.3],
@@ -24,7 +24,7 @@ export function SplashScreen({ onStart }: SplashScreenProps) {
         }}
       />
       <motion.div
-        className="absolute bottom-20 right-10 w-96 h-96 bg-[#FFC107]/10 rounded-full blur-3xl"
+        className="absolute bottom-20 right-10 w-96 h-96 bg-amber-300/20 rounded-full blur-3xl"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.2, 0.4, 0.2],

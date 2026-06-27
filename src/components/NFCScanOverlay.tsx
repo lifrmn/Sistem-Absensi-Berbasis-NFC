@@ -51,8 +51,8 @@ export function NFCScanOverlay({ onSuccess, onBack }: NFCScanOverlayProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-8 relative">
+    <div className="fixed inset-0 bg-slate-900/85 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white/90 backdrop-blur-md border border-white/70 rounded-3xl max-w-md w-full p-8 relative shadow-[0_30px_100px_-20px_rgba(2,6,23,0.6)]">
         <button
           onClick={onBack}
           className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -90,14 +90,14 @@ export function NFCScanOverlay({ onSuccess, onBack }: NFCScanOverlayProps) {
                     delay: 0.3,
                   }}
                 />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#0052CC] to-[#003D99] flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#0b3f99] to-[#0d2a66] flex items-center justify-center shadow-xl">
                   <Nfc className="w-16 h-16 text-white" />
                 </div>
               </div>
 
               <div>
-                <h3 className="text-2xl text-gray-900 mb-2">Mendeteksi NFC...</h3>
-                <p className="text-gray-600">
+                <h3 className="text-2xl text-slate-900 mb-2 font-display">Mendeteksi NFC...</h3>
+                <p className="text-slate-600">
                   Dekatkan HP Anda ke Dosen atau Tag NFC Kelas
                 </p>
               </div>
@@ -131,8 +131,8 @@ export function NFCScanOverlay({ onSuccess, onBack }: NFCScanOverlayProps) {
               <div className="mx-auto w-32 h-32 rounded-full bg-green-100 flex items-center justify-center mb-6">
                 <CheckCircle className="w-16 h-16 text-green-600" />
               </div>
-              <h3 className="text-2xl text-gray-900 mb-2">NFC Berhasil Terbaca!</h3>
-              <p className="text-gray-600">Absensi Anda telah tercatat</p>
+              <h3 className="text-2xl text-slate-900 mb-2 font-display">NFC Berhasil Terbaca!</h3>
+              <p className="text-slate-600">Absensi Anda telah tercatat</p>
               <div className="mt-6 p-4 bg-green-50 rounded-lg">
                 <p className="text-sm text-green-800">
                   ✓ Mata Kuliah: Pemrograman Web<br />
@@ -152,13 +152,13 @@ export function NFCScanOverlay({ onSuccess, onBack }: NFCScanOverlayProps) {
               <div className="mx-auto w-32 h-32 rounded-full bg-red-100 flex items-center justify-center mb-6">
                 <AlertCircle className="w-16 h-16 text-red-600" />
               </div>
-              <h3 className="text-2xl text-gray-900 mb-2">NFC Gagal</h3>
-              <p className="text-gray-600">Tidak dapat membaca tag NFC. Silakan coba lagi.</p>
+              <h3 className="text-2xl text-slate-900 mb-2 font-display">NFC Gagal</h3>
+              <p className="text-slate-600">Tidak dapat membaca tag NFC. Silakan coba lagi.</p>
               
               <div className="mt-6 space-y-3">
                 <Button 
                   onClick={handleRetry}
-                  className="w-full bg-[#0052CC] hover:bg-[#003D99]"
+                  className="w-full bg-gradient-to-r from-[#0052CC] to-[#0a3d9c] hover:from-[#0049b7] hover:to-[#07317f]"
                 >
                   Coba Lagi
                 </Button>

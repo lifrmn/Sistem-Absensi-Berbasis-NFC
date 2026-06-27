@@ -89,8 +89,8 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8">
-        <div className="max-w-6xl mx-auto text-center text-gray-600 py-20">Memuat sesi aktif...</div>
+      <div className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(14,116,144,0.1),transparent_30%),#f5f9ff] p-4 md:p-8">
+        <div className="max-w-6xl mx-auto text-center text-slate-500 py-20">Memuat sesi aktif...</div>
       </div>
     );
   }
@@ -101,14 +101,14 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(14,116,144,0.1),transparent_30%),radial-gradient(circle_at_85%_5%,rgba(59,130,246,0.12),transparent_30%),#f5f9ff] p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Button
             variant="ghost"
             onClick={onBack}
-            className="mb-4"
+            className="mb-4 text-slate-600"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Kembali ke Dashboard
@@ -116,13 +116,13 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl text-gray-900 mb-2">Sesi Absensi</h1>
-              <p className="text-gray-600">Mata Kuliah: {sessionCourse.replace(/-/g, ' ')}</p>
-              <p className="text-sm text-gray-500">Tanggal: {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <h1 className="text-3xl text-slate-900 mb-2 font-display">Sesi Absensi</h1>
+              <p className="text-slate-600">Mata Kuliah: <span className="capitalize">{sessionCourse.replace(/-/g, ' ')}</span></p>
+              <p className="text-sm text-slate-500">Tanggal: {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
-            <div className="text-right">
-              <div className="text-3xl text-[#0052CC]">{studentsPresent.length}</div>
-              <p className="text-sm text-gray-600">dari {studentsPresent.length + studentsAbsent.length} mahasiswa</p>
+            <div className="text-right bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-2xl px-6 py-4">
+              <div className="text-4xl text-[#0052CC] font-display">{studentsPresent.length}</div>
+              <p className="text-sm text-slate-600">dari {studentsPresent.length + studentsAbsent.length} mahasiswa</p>
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
 
           {/* Tab: Hadir */}
           <TabsContent value="hadir">
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -186,17 +186,17 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
               <div className="flex gap-3">
                 <Button 
                   onClick={handleSendNotification}
-                  className="bg-[#0052CC] hover:bg-[#003D99]"
+                  className="bg-gradient-to-r from-[#0052CC] to-[#0a3d9c] hover:from-[#0049b7] hover:to-[#07317f]"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Kirim Notifikasi
                 </Button>
-                <p className="text-sm text-gray-600 flex items-center">
+                <p className="text-sm text-slate-600 flex items-center">
                   Kirim pengingat ke semua mahasiswa yang belum hadir
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+              <div className="bg-white/85 backdrop-blur-sm border border-white/70 shadow-md rounded-xl overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -209,7 +209,7 @@ export function ActiveSession({ onBack }: ActiveSessionProps) {
                   </TableHeader>
                   <TableBody>
                     {studentsAbsent.map((student) => (
-                      <TableRow key={student.id} className="hover:bg-gray-50">
+                      <TableRow key={student.id} className="hover:bg-slate-50">
                         <TableCell>{student.nama}</TableCell>
                         <TableCell>{student.nim}</TableCell>
                         <TableCell>

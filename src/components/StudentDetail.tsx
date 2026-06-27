@@ -26,20 +26,20 @@ export function StudentDetail({ student, onBack }: StudentDetailProps) {
   const totalPertemuan = (student.totalHadir || 0) + (student.totalTidakHadir || 0);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(14,116,144,0.1),transparent_30%),radial-gradient(circle_at_85%_5%,rgba(59,130,246,0.12),transparent_30%),#f5f9ff] p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <Button
           variant="ghost"
           onClick={onBack}
-          className="mb-6"
+          className="mb-6 text-slate-600"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Kembali ke Laporan
         </Button>
 
         {/* Student Profile */}
-        <Card className="mb-6">
+        <Card className="mb-6 border border-white/80 shadow-lg bg-white/85 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Profil Mahasiswa</CardTitle>
           </CardHeader>

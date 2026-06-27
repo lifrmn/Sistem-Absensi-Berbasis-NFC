@@ -3,7 +3,7 @@
 
 # 📡 Sistem Absensi NFC — Unismuh
 
-**Sistem absensi modern berbasis NFC dengan AI insights, real-time monitoring, dan deploy satu perintah.**
+**Sistem absensi modern berbasis NFC dengan real-time monitoring, laporan kehadiran, dan deploy satu perintah.**
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)](package.json)
 [![Stack](https://img.shields.io/badge/stack-React%20%2B%20Express%20%2B%20SQLite-0052CC?style=flat-square)](#tech-stack)
@@ -22,8 +22,7 @@
 | 📡 **Absensi NFC** | Tap kartu NFC untuk mencatat kehadiran real-time |
 | 📊 **Dashboard Dosen** | Statistik sesi, monitoring kehadiran, laporan lengkap |
 | 🎓 **Dashboard Mahasiswa** | Riwayat kehadiran & persentase personal |
-| 🤖 **AI Insights** | Prediksi mahasiswa berisiko & analitik cerdas |
-| 💬 **AI Chatbot** | Asisten absensi berbasis AI |
+| 📈 **Analitik Kehadiran** | Grafik tren & prediksi mahasiswa perlu perhatian |
 | 🐳 **Single Container** | Deploy satu `docker compose` di VPS kecil sekalipun |
 
 ---
