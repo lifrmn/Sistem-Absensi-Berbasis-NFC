@@ -18,8 +18,8 @@ Endpoint lokal:
 - Backend API: `http://localhost:4000`
 
 Catatan:
-- Frontend default memakai `/api` (same-origin).
-- Saat development, Vite memproxy `/api` ke backend.
+- Saat development, Vite memproxy `/api` ke backend (port 4000) secara otomatis.
+- Di production (single container), frontend dan API berada di origin yang sama — tidak perlu konfigurasi proxy tambahan.
 
 ## Akun Demo
 
@@ -49,6 +49,7 @@ File deployment:
 2. Isi nilai production:
    - `JWT_SECRET` wajib acak dan minimal 32 karakter.
    - `CORS_ORIGIN` isi domain aplikasi Anda, contoh `https://absensi.example.com`.
+   - `PUBLIC_PORT` port yang diekspos ke host (default `80`). Ganti jika port 80 sudah terpakai, contoh `PUBLIC_PORT=8080`.
 
 ### 2) Startup command production
 
